@@ -29,6 +29,7 @@ urlpatterns = [
     path('admin_a195abe937af4f5ab2b/', admin.site.urls),
     path('admin/', include(('administration.urls', 'administration'), namespace='administration'), name="administration"),
     path('auth/', include(('authentication.urls', 'authentication'), namespace='authentication')),
+    path('employee/', include(('employee.urls', 'employee'), namespace='employee')),
     path('profile/', include(('profiles.urls', 'profiles'), namespace='profile'), name="profile"),
     path('geo/', include(('geo_city.urls', 'geo'), namespace='geo'), name="geo"),
     path('company/', include(('company.urls', 'company'), namespace='company'), name="company"),

@@ -3,7 +3,6 @@ Django==4.0.1
 django-rest-swagger==2.2.0
 djangorestframework==3.13.1
 djangorestframework-jwt==1.11.0
-psycopg2==2.9.3
 redis==4.1.2
 geoip2==4.5.0
 pillow==9.0.0

@@ -49,31 +49,17 @@ class Company(models.Model):
     )
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
     name = models.CharField(_('company name'), db_index=True, max_length=150, null=True, blank=True)
-    short_name = models.CharField(_('company short name'), max_length=50, null=True, blank=True)
-    tagline = models.CharField(_('company tagline'), max_length=250, null=True, blank=True)
-    slug = models.CharField(_('company slug'), max_length=100, null=True, blank=True)
     description = models.CharField(_('company description'), max_length=300, null=True, blank=True)
-    inn = models.CharField(_('company inn'), max_length=35, null=True, blank=True)
-    kpp = models.CharField(_('company kpp'), max_length=35, null=True, blank=True)
-    ogrn = models.CharField(_('company ogrn'), max_length=35, null=True, blank=True)
-    ogrn_date = models.DateField(null=True, blank=True)
-    okato = models.CharField(_('company okato'), max_length=35, null=True, blank=True)
-    oktmo = models.CharField(_('company oktmo'), max_length=35, null=True, blank=True)
-    okpo = models.CharField(_('company okpo'), max_length=35, null=True, blank=True)
-    okogu = models.CharField(_('company okogu'), max_length=35, null=True, blank=True)
-    okfs = models.CharField(_('company okfs'), max_length=35, null=True, blank=True)
-    okved = models.CharField(_('company okved'), max_length=35, null=True, blank=True)
-    okved_type = models.CharField(_('company okved_type'), max_length=10, null=True, blank=True)
     type_company = models.CharField(_('company type'), max_length=20, choices=TYPES_COMPANY, null=True, blank=True)
     organizational_legal_form = models.ForeignKey(OrganizationalLegalForm, related_name="company",
                                                   null=True, on_delete=models.SET_NULL)
-    status = models.CharField(max_length=50, choices=STATUS, null=True, blank=True)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True)
     phone = models.CharField(max_length=18, db_index=True, null=True, blank=True)
     email = models.EmailField(null=True, db_index=True, blank=True)
     logo = models.ImageField(upload_to="companies/logo/", null=True, blank=True, validators=[validate_images])
     is_banned = models.BooleanField(default=False)
-    tariff = models.ForeignKey(CompanyPlan, related_name='companies', null=True, on_delete=models.SET_NULL)
+
+    # tariff = models.ForeignKey(CompanyPlan, related_name='companies', null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name
@@ -104,3 +90,16 @@ class Branch(models.Model):
             "name": self.name,
             "address": self.address.to_dict(),
         }
+
+
+class Department(models.Model):
+    name = models.CharField(_('department name'), max_length=255, unique=True)
+    company = models.ForeignKey(Company, related_name='departments', on_delete=models.CASCADE)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True)
+    description = models.CharField(max_length=500, null=True, blank=True)
+    phone = models.CharField(max_length=18, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = _('department')
+        verbose_name_plural = _('departments')

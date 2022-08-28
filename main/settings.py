@@ -48,13 +48,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_swagger',
     'geoip2',
-
     'authentication',
     'profiles',
     'geo_city',
     'company',
     'notification',
     'administration',
+    'employee',
 ]
 
 MIDDLEWARE = [
