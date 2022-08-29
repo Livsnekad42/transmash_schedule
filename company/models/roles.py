@@ -1,7 +1,8 @@
 from django.db import models
 
-from company.models import Company, Branch
+from company.models import Company
 from core.enums.permission import PermissionEnum
+from employee.models import Branch
 
 
 class Role(models.Model):

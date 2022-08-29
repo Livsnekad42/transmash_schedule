@@ -48,15 +48,15 @@ class Company(models.Model):
         (StatusCompany.REORGANIZING.value, "reorganizing"),
     )
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
-    name = models.CharField(_('company name'), db_index=True, max_length=150, null=True, blank=True)
-    description = models.CharField(_('company description'), max_length=300, null=True, blank=True)
-    type_company = models.CharField(_('company type'), max_length=20, choices=TYPES_COMPANY, null=True, blank=True)
+    name = models.CharField(_('Наименование'), db_index=True, max_length=150, null=True, blank=True)
+    description = models.CharField(_('Описание'), max_length=300, null=True, blank=True)
+    type_company = models.CharField(_('Тип компании'), max_length=20, choices=TYPES_COMPANY, null=True, blank=True)
     organizational_legal_form = models.ForeignKey(OrganizationalLegalForm, related_name="company",
                                                   null=True, on_delete=models.SET_NULL)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True)
-    phone = models.CharField(max_length=18, db_index=True, null=True, blank=True)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True, verbose_name='Адрес')
+    phone = models.CharField(max_length=18, db_index=True, null=True, blank=True, verbose_name='Телефон')
     email = models.EmailField(null=True, db_index=True, blank=True)
-    logo = models.ImageField(upload_to="companies/logo/", null=True, blank=True, validators=[validate_images])
+    logo = models.ImageField(upload_to="companies/logo/", null=True, blank=True, validators=[validate_images], verbose_name='Логотип')
     is_banned = models.BooleanField(default=False)
 
     # tariff = models.ForeignKey(CompanyPlan, related_name='companies', null=True, on_delete=models.SET_NULL)
@@ -65,31 +65,13 @@ class Company(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = _('company')
-        verbose_name_plural = _('companies')
+        verbose_name = _('Компания')
+        verbose_name_plural = _('Компании')
 
 
-class Branch(models.Model):
-    name = models.CharField(_('branch name'), max_length=255, unique=True)
-    company = models.ForeignKey(Company, related_name='branches', on_delete=models.CASCADE)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True)
-    description = models.CharField(max_length=500, null=True, blank=True)
-    phone = models.CharField(max_length=18, null=True, blank=True)
-    email = models.EmailField(null=True, blank=True)
 
-    def __str__(self):
-        return self.name
 
-    class Meta:
-        verbose_name = _('branch')
-        verbose_name_plural = _('branches')
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "address": self.address.to_dict(),
-        }
 
 
 class Department(models.Model):

@@ -9,7 +9,10 @@ from .models import *
 
 
 admin.site.register(Employee)
-admin.site.register(Skills)
+admin.site.register(Skill)
+admin.site.register(SkillLevel)
+admin.site.register(BranchRequirementSKill)
+admin.site.register(EmployeeTechSkill)
 
 admin.site.register(Personal)
 

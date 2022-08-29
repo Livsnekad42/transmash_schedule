@@ -44,7 +44,10 @@ class Profile(TimestampedModel):
     user_type = models.CharField(_('type user'), max_length=2, default=TypeUser.USER.value, choices=TYPES_USER)
     is_banned = models.BooleanField(default=False)
     background_tree = models.CharField(max_length=100, null=True, blank=True)
-    tariff = models.ForeignKey(UserPlan, related_name='profiles', null=True, on_delete=models.SET_NULL)
+    #tariff = models.ForeignKey(UserPlan, related_name='profiles', null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
 
     def save(self, *args, **kwargs):
         is_new_avatar = kwargs.pop("new_avatar", None)

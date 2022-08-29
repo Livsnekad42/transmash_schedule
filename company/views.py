@@ -11,11 +11,12 @@ from rest_framework.response import Response
 from company.filters import ManagerFilterBackend, CompanyFilterBackend
 from company.models import Company, Branch, Role, Manager
 from company.permissions import ManagerCompanyPermission, ManagerRoleCompanyPermission
-from company.serializers import CompanySerializer, BranchSerializer, RoleSerializer, ManagerSerializer, \
+from company.serializers import CompanySerializer, RoleSerializer, ManagerSerializer, \
     PublicCompanySerializer, CompanyINNSerializer
 from company.services.company_data_inn import get_company_data_from_inn
 from core.permissions.manager import get_company_from_request
 from core.utils import get_profile_in_request
+from employee.serializers import BranchSerializer
 from profiles.models import TypeUser
 
 

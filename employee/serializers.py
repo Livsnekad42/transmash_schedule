@@ -1,7 +1,10 @@
 from abc import ABC
 from django.forms import models
 from rest_framework import serializers
-from .models import Skills, Branch, Personal, Employee
+
+from company.models import Company
+from geo_city.serializers import AddressSerializer
+from .models import Skill, SkillLevel, Branch, Personal, Employee, BranchRequirementSKill, EmployeeTechSkill
 from rest_framework.renderers import JSONRenderer
 
 
@@ -11,11 +14,6 @@ from rest_framework.renderers import JSONRenderer
 #  self.seniority = seniority
 #
 
-class BranchSerializer(serializers.ModelSerializer):
-    class Meta:
-        model: Branch
-        fields = "__all__"
-
 
 class PersonalSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,15 +21,84 @@ class PersonalSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class SkillsSerializer(serializers.ModelSerializer):
+class SkillSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Skills
+        model = Skill
+        fields = "__all__"
+
+
+class SkillLevelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SkillLevel
+        fields = "__all__"
+
+
+class BranchRequirementSkillSerializer(serializers.ModelSerializer):
+    skill = SkillSerializer(required=False)
+    skill_level = SkillLevelSerializer(required=False)
+
+    class Meta:
+        model: BranchRequirementSKill
+        fields = "__all__"
+
+
+class BranchSerializer(serializers.ModelSerializer):
+    requirements = BranchRequirementSkillSerializer(required=False, allow_null=True)
+    id = serializers.IntegerField(read_only=True)
+    company = serializers.PrimaryKeyRelatedField(queryset=Company.objects.all())
+    address = AddressSerializer(required=False, allow_null=True)
+
+    class Meta:
+        model = Branch
+        fields = (
+            'id',
+            'name',
+            'address',
+            'description',
+            'phone',
+            'email',
+            'company',
+            'requirements'
+        )
+
+    def create(self, validated_data):
+        address = validated_data.pop("address", None)
+
+        if address:
+            address_instance = AddressSerializer.update_or_create(address)
+        else:
+            address_instance = None
+
+        return Branch.objects.create(**validated_data, address=address_instance)
+
+    def update(self, instance, validated_data):
+        address = validated_data.pop("address", None)
+
+        if address:
+            address_instance = AddressSerializer.update_or_create(address)
+        else:
+            address_instance = None
+
+        instance.address = address_instance
+        for (key, value) in validated_data.items():
+            setattr(instance, key, value)
+
+        instance.save()
+        return instance
+
+
+class EmployeeTechSkillSerializer(serializers.ModelSerializer):
+    skill = SkillSerializer(required=False)
+    skill_level = SkillLevelSerializer(required=False)
+
+    class Meta:
+        model: EmployeeTechSkill
         fields = "__all__"
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=40, allow_null=True, allow_blank=True, required=False)
-    skills_level = SkillsSerializer(many=True, required=False)
+    employee_tech_skill = EmployeeTechSkillSerializer(many=True, required=False)
     photo = serializers.ImageField(required=False)
     explored_branches = BranchSerializer(required=False, many=True)
 
@@ -54,7 +121,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
             #             skills_level.pop(skill)
             #         except Skills.DoesNotExist:
             #             raise ValueError("Такого id не найдено")
-            skills_level_serializer = SkillsSerializer(data=skills_level, many=True)
+            skills_level_serializer = EmployeeTechSkillSerializer(data=skills_level, many=True)
             skills_level_serializer.is_valid(raise_exception=True)
             skills_instances = skills_level_serializer.save()
         instance = Employee.objects.create(**validated_data)

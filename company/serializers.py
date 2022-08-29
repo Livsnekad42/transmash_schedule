@@ -209,47 +209,7 @@ class CompanySerializer(serializers.ModelSerializer):
         return instance
 
 
-class BranchSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
-    company = serializers.PrimaryKeyRelatedField(queryset=Company.objects.all())
-    address = AddressSerializer(required=False, allow_null=True)
 
-    class Meta:
-        model = Branch
-        fields = (
-            'id',
-            'name',
-            'address',
-            'description',
-            'phone',
-            'email',
-            'company',
-        )
-
-    def create(self, validated_data):
-        address = validated_data.pop("address", None)
-
-        if address:
-            address_instance = AddressSerializer.update_or_create(address)
-        else:
-            address_instance = None
-
-        return Branch.objects.create(**validated_data, address=address_instance)
-
-    def update(self, instance, validated_data):
-        address = validated_data.pop("address", None)
-
-        if address:
-            address_instance = AddressSerializer.update_or_create(address)
-        else:
-            address_instance = None
-
-        instance.address = address_instance
-        for (key, value) in validated_data.items():
-            setattr(instance, key, value)
-
-        instance.save()
-        return instance
 
 
 class RoleSerializer(serializers.ModelSerializer):
